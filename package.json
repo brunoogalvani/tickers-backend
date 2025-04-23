@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "glob": "^11.0.2",
+    "mongodb": "^6.16.0",
+    "nodemon": "^3.1.9"
+  },
+  "name": "projetoa3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunoogalvani/tickers-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/brunoogalvani/tickers-backend/issues"
+  },
+  "homepage": "https://github.com/brunoogalvani/tickers-backend#readme"
+}
