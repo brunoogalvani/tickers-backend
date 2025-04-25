@@ -10,3 +10,9 @@ export async function getUsers() {
     const colecao = db.collection("users")
     return colecao.find().toArray()
 }
+
+export async function postUser(user) {
+    const db = conexao.db("Tickers")
+    const colecao = db.collection("users")
+    return colecao.insertOne(user)
+}
