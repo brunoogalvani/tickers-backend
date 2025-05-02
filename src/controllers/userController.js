@@ -67,3 +67,31 @@ export async function deletarUser(req, res) {
         res.status(500).json({error: "Erro ao deletar usuário"})
     }
 }
+
+export async function authUser(req, res) {
+    const { email, senha } = req.body
+
+    if (!email || !senha) {
+        return res.status(400).json({error: "Faltam dados obrigatórios"})
+    }
+
+    try {
+        const user = await prisma.user.findUnique({where: {email: email}})
+
+        if (!user) {
+            return res.status(400).json({error: "Usuário não encontrado"})
+        }
+
+        const isMatch = await bcrypt.compare(senha, user.senha)
+
+        if (!isMatch) {
+            return res.status(400).json({error: "Senha inválida"})
+        }
+
+        return res.status(200).json({message: "Usuário autenticado"})
+        
+    } catch (error) {
+        console.error("Erro na autenticação de usuário", error)
+        res.status(500).json({error: "Erro na autenticação de usuário"})
+    }
+}

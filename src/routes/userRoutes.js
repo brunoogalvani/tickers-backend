@@ -1,11 +1,12 @@
 import express from 'express'
-import { criarUser, deletarUser, listarUsers } from '../controllers/userController.js'
+import { authUser, criarUser, deletarUser, listarUsers } from '../controllers/userController.js'
 
 const routes = (app) => {
     app.use(express.json())
     app.get('/users', listarUsers)
     app.post('/users', criarUser)
     app.delete('/users/:id', deletarUser)
+    app.post('/users/login', authUser)
 }
 
 export default routes
