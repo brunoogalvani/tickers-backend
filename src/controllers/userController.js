@@ -38,13 +38,13 @@ export async function criarUser(req, res) {
             data: {
                 nome,
                 email,
-                role: role || 'USER',
+                role,
                 cep,
                 senha: hashPassword,
             },
         })
 
-        res.status(201).json()
+        res.status(201).json({message: "Usuário criado com sucesso!"})
     } catch (error) {
         console.log("Erro ao criar usuário", error)
         res.status(500).json({error: "Erro ao criar usuário"})

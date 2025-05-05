@@ -18,14 +18,40 @@ model User {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   nome    String
   email   String   @unique
-  role    String   @default("USER")
+  role    Role     @default(user)
   cep     String
   senha   String
 }
 
+enum Role {
+  user
+  admin
+}
+
 model Evento {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  titulo         String
+  descricao      String
+  categoria      String
+  dataInicioISO  DateTime
+  dataInicio     String
+  dataFim        String?
+  local          Local
+  preco          Float
+  imagemCapa     String
+  status         Status   @default(ativo)
+}
+
+type Local {
   nome       String
-  local      String
-  descricao  String
+  endereco   String
+  cidade     String
+  estado     String
+  cep        String
+}
+
+enum Status {
+  ativo
+  cancelado
+  encerrado
 }
