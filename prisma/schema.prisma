@@ -15,12 +15,13 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome    String
-  email   String   @unique
-  role    Role     @default(user)
-  cep     String
-  senha   String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome      String
+  telefone  String
+  email     String   @unique
+  role      Role     @default(user)
+  cep       String
+  senha     String
 }
 
 enum Role {
