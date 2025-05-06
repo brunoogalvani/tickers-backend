@@ -20,9 +20,9 @@ export async function listarUsers(req, res) {
 }
 
 export async function criarUser(req, res) {
-    const { nome, email, role, cep, senha } = req.body
+    const { nome, email, telefone, role, cep, senha } = req.body
 
-    if (!nome || !email || !cep || !senha) {
+    if (!nome || !email || !telefone || !cep || !senha) {
         return res.status(400).json({error: "Faltam dados obrigatórios"})
     }
 
@@ -38,6 +38,7 @@ export async function criarUser(req, res) {
             data: {
                 nome,
                 email,
+                telefone,
                 role,
                 cep,
                 senha: hashPassword,
