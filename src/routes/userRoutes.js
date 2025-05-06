@@ -4,7 +4,7 @@ import { authUser, criarUser, deletarUser, listarUsers } from '../controllers/us
 
 const routes = (app) => {
     app.use(express.json())
-    app.use(cors)
+    app.use(cors())
     app.get('/users', listarUsers)
     app.post('/users', criarUser)
     app.delete('/users/:id', deletarUser)
