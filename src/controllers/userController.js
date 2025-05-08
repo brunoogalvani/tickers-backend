@@ -89,7 +89,7 @@ export async function authUser(req, res) {
             return res.status(400).json({error: "Senha inválida"})
         }
 
-        return res.status(200).json({message: "Usuário autenticado"})
+        return res.status(200).json({message: "Usuário autenticado", id: user.id})
         
     } catch (error) {
         console.error("Erro na autenticação de usuário", error)
