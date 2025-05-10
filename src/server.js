@@ -1,9 +1,11 @@
 import express from 'express'
-import routes from './src/routes/userRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import eventoRoutes from './routes/eventoRoutes.js'
 
 const app = express()
 
-routes(app)
+userRoutes(app)
+eventoRoutes(app)
 
 app.listen(8080, () => {
     console.log('Servidor rodando -> http://localhost:8080')
