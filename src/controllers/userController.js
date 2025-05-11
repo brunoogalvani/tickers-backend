@@ -19,6 +19,17 @@ export async function listarUsers(req, res) {
     }
 }
 
+export async function listarUserById(req, res) {
+    const { id } = req.params
+
+    try {
+        const user = await prisma.user.findUnique({where: {id: id}})
+        res.status(200).json(user)
+    } catch (error) {
+        console.log("Erro ao retornar usuário", error)
+    }
+}
+
 export async function criarUser(req, res) {
     const { nome, email, telefone, role, cep, senha } = req.body
 
