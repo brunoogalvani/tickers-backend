@@ -61,3 +61,48 @@ export async function deletarEvento(req, res) {
         res.status(500).json({error: "Erro ao deletar evento"})
     }
 }
+
+export async function atualizarEvento(req, res) {
+    const { id } = req.params
+    const { titulo, descricao, categoria, dataInicioISO, dataInicio, dataFim, local, preco, imagemCapa } = req.body
+    
+    if (!id) {
+        return res.status(400).json({error: "ID do evento é obrigatório"})
+    }
+
+    try {
+        const eventoExistente = await prisma.evento.findUnique({where: { id }})
+
+        if (!eventoExistente) {
+            return res.status(404).json({error: "Evento não encontrado"})
+        }
+
+        const eventoAtualizado = await prisma.evento.update({
+            where: { id },
+            data: {
+                titulo,
+                descricao,
+                categoria,
+                dataInicioISO,
+                dataInicio,
+                dataFim,
+                local: local ? {
+                    update: {
+                        nome: local.nome,
+                        endereco: local.endereco,
+                        cidade: local.cidade,
+                        estado: local.estado,
+                        cep: local.cep
+                    }
+                } : undefined,
+                preco,
+                imagemCapa
+            }
+        })
+
+        return res.status(200).json({message: "Evento atualizado com sucesso", evento: eventoAtualizado})
+    } catch (error) {
+        console.error("Erro ao atualizar evento", error)
+        res.status(500).json({error: "Erro ao atualizar evento"})
+    }
+}
