@@ -27,6 +27,7 @@ model User {
 enum Role {
   user
   admin
+  promoter
 }
 
 model Evento {
