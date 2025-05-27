@@ -19,9 +19,13 @@ app.get('/swagger.json', (req, res) => {
   res.json(swaggerDocs)
 })
 
-app.listen(8080, () => {
-    console.log('Servidor rodando -> http://localhost:8080/api-docs')
-})
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(8080, () => {
+      console.log('Servidor rodando -> http://localhost:8080/api-docs')
+  })
+}
+
+export default app
 
 // necessário para rodar o projeto -> npm install
 
