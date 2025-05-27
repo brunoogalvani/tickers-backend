@@ -19,16 +19,21 @@ const __dirname = path.dirname(__filename)
 userRoutes(app)
 eventoRoutes(app)
 
-app.use('/api-docs', express.static(swaggerUi.getAbsoluteFSPath()))
+app.use('/api-docs*', express.static(swaggerUi.getAbsoluteFSPath()))
 
 app.get('/api-docs', (req, res) => {
-    const indexPath = path.join(swaggerUi.getAbsoluteFSPath(), 'index.html')
-    let html = fs.readFileSync(indexPath, 'utf8')
-    html = html.replace(
-        'https://petstore.swagger.io/v2/swagger.json',
-        '/swagger.json'
-    )
-    res.send(html)
+    try {
+        const indexPath = path.join(swaggerUi.getAbsoluteFSPath(), 'index.html')
+        let html = fs.readFileSync(indexPath, 'utf8')
+        html = html.replace(
+            'https://petstore.swagger.io/v2/swagger.json',
+            '/swagger.json'
+        )
+        res.send(html)
+    } catch (error) {
+        console.error('Erro ao carregar Swagger UI:', error)
+        res.status(500).send('Erro ao carregar documentação')
+    }
 })
 
 app.get('/swagger.json', (req, res) => {
