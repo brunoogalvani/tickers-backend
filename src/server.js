@@ -27,7 +27,7 @@ app.get('/api-docs/swagger', (req, res) => {
         let html = fs.readFileSync(indexPath, 'utf8')
         html = html.replace(
             'https://petstore.swagger.io/v2/swagger.json',
-            '/swagger.json'
+            'https://tickers-backend.vercel.app/swagger.json'
         )
         res.send(html)
     } catch (error) {
