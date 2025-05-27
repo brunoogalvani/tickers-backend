@@ -19,9 +19,9 @@ const __dirname = path.dirname(__filename)
 userRoutes(app)
 eventoRoutes(app)
 
-app.use('/api-docs*', express.static(swaggerUi.getAbsoluteFSPath()))
+app.use('/api-docs', express.static(swaggerUi.getAbsoluteFSPath()))
 
-app.get('/api-docs', (req, res) => {
+app.get('/api-docs/swagger', (req, res) => {
     try {
         const indexPath = path.join(swaggerUi.getAbsoluteFSPath(), 'index.html')
         let html = fs.readFileSync(indexPath, 'utf8')
