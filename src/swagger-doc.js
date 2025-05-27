@@ -134,8 +134,93 @@ export default {
                         description: 'Erro no servidor'
                     }
                 }
+            },
+            post: {
+                tags:['eventos'],
+                summary: 'Cria um novo evento',
+                requestBody: {
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/evento'
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    201: {
+                        description: 'Evento criado'
+                    },
+                    400: {
+                        description: 'Erro na requisição'
+                    },
+                    500: {
+                        description: 'Erro no servidor'
+                    }
+                },
             }
-        }
+        },
+        '/eventos/{eventoId}': {
+            delete: {
+                tags: ['eventos'],
+                summary: 'Deleta um evento de acordo com o ID',
+                "parameters": [
+                    {
+                        "name": "eventoId",
+                        "in": "path",
+                        "description": "ID do evento",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                responses: {
+                    200: {
+                        description: 'Evento deletado'
+                    },
+                    500: {
+                        description: 'Erro no servidor'
+                    }
+                },
+            },
+            patch: {
+                tags: ['eventos'],
+                summary: 'Atualiza um evento',
+                "parameters": [
+                    {
+                        "name": "eventoId",
+                        "in": "path",
+                        "description": "ID do evento",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                requestBody: {
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/eventoUpdate'
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: {
+                        description: 'Evento atualizado'
+                    },
+                    400: {
+                        description: 'ID é obrigatório'
+                    },
+                    404: {
+                        description: 'Evento não encontrado'
+                    },
+                    500: {
+                        description: 'Erro no servidor'
+                    }
+                },
+            }
+        },
     },
     components: {
         schemas: {
@@ -183,6 +268,29 @@ export default {
                     imagemCapa: {type: 'string'}
                 },
                 required: ['titulo', 'descricao', 'categoria', 'dataInicioISO', 'dataInicio', 'local', 'preco', 'imagemCapa']
+            },
+            eventoUpdate: {
+                type: 'object',
+                properties: {
+                    titulo: {type: 'string', nullable: true},
+                    descricao: {type: 'string', nullable: true},
+                    categoria: {type: 'string', nullable: true},
+                    dataInicioISO: {type: 'string', format: 'date-time', nullable: true},
+                    dataInicio: {type: 'string', nullable: true},
+                    dataFim: {type: 'string', nullable: true},
+                    local: {
+                        type: 'object',
+                        properties: {
+                            nome: {type: 'string', nullable: true},
+                            endereco: {type: 'string', nullable: true},
+                            cidade: {type: 'string', nullable: true},
+                            estado: {type: 'string', nullable: true},
+                            cep: {type: 'string', nullable: true}
+                        },
+                    },
+                    preco: {type: 'number', nullable: true},
+                    imagemCapa: {type: 'string'}
+                },
             }
         }
     }
