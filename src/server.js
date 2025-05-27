@@ -16,7 +16,7 @@ eventoRoutes(app)
 // CDN CSS
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.3.0/swagger-ui.min.css";
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {customCss: CSS_URL}))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {customCssUrl: CSS_URL}))
 
 app.get('/swagger.json', (req, res) => {
   res.json(swaggerDocs)
