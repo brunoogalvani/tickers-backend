@@ -5,6 +5,9 @@ import eventoRoutes from './routes/eventoRoutes.js'
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocs from './swagger-doc.js'
 
+import dotenv from 'dotenv'
+dotenv.config()
+
 const app = express()
 
 app.use(express.json())

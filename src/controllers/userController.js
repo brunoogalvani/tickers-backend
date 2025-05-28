@@ -1,7 +1,5 @@
 import { PrismaClient } from '../generated/prisma/client.js'
 import bcrypt from 'bcrypt'
-import dotenv from 'dotenv'
-dotenv.config()
 
 const prisma = new PrismaClient()
 try {
