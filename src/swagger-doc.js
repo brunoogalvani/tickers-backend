@@ -31,6 +31,7 @@ export default {
                 tags: ['users'],
                 summary: 'Cria um novo usuário',
                 requestBody: {
+                    required: true,
                     content: {
                         'application/json': {
                             schema: {
@@ -93,6 +94,43 @@ export default {
                         description: 'Erro no servidor'
                     }
                 },
+            },
+            patch: {
+                tags: ['users'],
+                summary: 'Atualiza um usuário',
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                requestBody: {
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/userUpdate'
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: {
+                        description: 'Usuário atualizado'
+                    },
+                    400: {
+                        description: 'ID é obrigatório'
+                    },
+                    404: {
+                        description: 'Usuário não encontrado'
+                    },
+                    500: {
+                        description: 'Erro no servidor'
+                    }
+                },
             }
         },
         '/users/login': {
@@ -139,6 +177,7 @@ export default {
                 tags:['eventos'],
                 summary: 'Cria um novo evento',
                 requestBody: {
+                    required: true,
                     content: {
                         'application/json': {
                             schema: {
@@ -236,6 +275,16 @@ export default {
                 },
                 required: ['nome', 'email', 'telefone', 'role', 'cep', 'senha']
             },
+            userUpdate: {
+                type: 'object',
+                properties: {
+                    nome: {type: 'string', nullable: true},
+                    email: {type: 'string', nullable: true},
+                    telefone: {type: 'string', nullable: true},
+                    cep: {type: 'string', nullable: true},
+                    senha: {type: 'string', nullable: true}
+                },
+            },
             userLogin: {
                 type: 'object',
                 properties: {
@@ -289,7 +338,7 @@ export default {
                         },
                     },
                     preco: {type: 'number', nullable: true},
-                    imagemCapa: {type: 'string'}
+                    imagemCapa: {type: 'string', nullable: true}
                 },
             }
         }

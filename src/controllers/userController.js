@@ -78,6 +78,39 @@ export async function deletarUser(req, res) {
     }
 }
 
+export async function atualizarUser(req, res) {
+    const { id } = req.params
+    const { nome, email, telefone, role, cep, senha } = req.body
+
+    if (!id) {
+        return res.status(400).json({error: "ID do usuário é obrigatório"})
+    }
+    
+    try {
+        const userExistente = await prisma.user.findUnique({where: {id}})
+
+        if (!userExistente) {
+            return res.status(404).json({error: "Usuário não existente"})
+        }
+
+        const userAtualizado = await prisma.user.update({
+            where: {id},
+            data: {
+                nome,
+                email,
+                telefone,
+                cep,
+                senha
+            }
+        })
+
+        return res.status(200).json({message: "Usuário atualizado com sucesso!", usuario: userAtualizado})
+    } catch (error) {
+        console.error("Erro ao atualizar usuário", error)
+        res.status(500).json({error: "Erro ao atualizar usuário"})
+    }
+}
+
 export async function authUser(req, res) {
     const { email, senha } = req.body
 
