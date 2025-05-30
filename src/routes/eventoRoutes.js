@@ -1,10 +1,24 @@
+import multer from 'multer'
+import path from 'path'
 import { atualizarEvento, criarEvento, deletarEvento, listarEventos } from '../controllers/eventoController.js'
+import { parseLocalMiddleware } from '../middleware/parseLocalMiddleware.js'
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/')
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({storage})
 
 const eventoRoutes = (app) => {
     app.get('/eventos', listarEventos)
-    app.post('/eventos', criarEvento)
+    app.post('/eventos', upload.single('imagemCapa'), parseLocalMiddleware, criarEvento)
     app.delete('/eventos/:id', deletarEvento)
-    app.patch('/eventos/:id', atualizarEvento)
+    app.patch('/eventos/:id', upload.single('imagemCapa'), atualizarEvento)
 }
 
 export default eventoRoutes

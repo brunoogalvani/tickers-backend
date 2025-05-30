@@ -5,7 +5,7 @@ export default {
         description: 'Essa API faz parte do projeto das matérias de <strong>Sistemas distribuídos e mobile</strong> e <strong>Usabilidade, desenvolvimento web, mobile e jogos</strong>.<br><br>Os integrantes do grupo são: <ul><li>Allan Lucas Ogawa - RA: 824138863</li><li>Arthur Nascimento Nabas de Oliveira - RA: 824132232</li><li>Bruno Galvani Thezolin - RA: 82411888</li><li>Brunno Luiz de Sousa Nepomuceno - RA: 82414197</li><li>Danilo de Araujo Massimetti Maranha - RA: 824129587</li><li>Bruno Galvani Thezolin - RA: 82411888</li><li>Paulo Messias Santos Filho - RA: 825162650</li></ul>',
         version: '1.0.0',
     },
-    servers: [{url: 'https://tickers-backend.vercel.app'}],
+    servers: [{url: 'https://tickers-backend.vercel.app'}, {url: 'http://localhost:8080'}],
     tags: [
         {
             name: 'users',
@@ -179,7 +179,7 @@ export default {
                 requestBody: {
                     required: true,
                     content: {
-                        'application/json': {
+                        'multipart/form-data': {
                             schema: {
                                 $ref: '#/components/schemas/evento'
                             }
@@ -237,7 +237,7 @@ export default {
                 ],
                 requestBody: {
                     content: {
-                        'application/json': {
+                        'multipart/form-data': {
                             schema: {
                                 $ref: '#/components/schemas/eventoUpdate'
                             }
@@ -281,6 +281,7 @@ export default {
                     nome: {type: 'string', nullable: true},
                     email: {type: 'string', nullable: true},
                     telefone: {type: 'string', nullable: true},
+                    role: {type: 'string', nullable: true},
                     cep: {type: 'string', nullable: true},
                     senha: {type: 'string', nullable: true}
                 },
@@ -314,7 +315,7 @@ export default {
                         required: ['nome', 'endereco', 'cidade', 'estado', 'cep']
                     },
                     preco: {type: 'number'},
-                    imagemCapa: {type: 'string'}
+                    imagemCapa: {type: 'string', format: 'binary'}
                 },
                 required: ['titulo', 'descricao', 'categoria', 'dataInicioISO', 'dataInicio', 'local', 'preco', 'imagemCapa']
             },
@@ -338,7 +339,7 @@ export default {
                         },
                     },
                     preco: {type: 'number', nullable: true},
-                    imagemCapa: {type: 'string', nullable: true}
+                    imagemCapa: {type: 'string', format: 'binary', nullable: true}
                 },
             }
         }

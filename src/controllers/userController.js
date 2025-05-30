@@ -99,6 +99,7 @@ export async function atualizarUser(req, res) {
                 nome,
                 email,
                 telefone,
+                role,
                 cep,
                 senha
             }
