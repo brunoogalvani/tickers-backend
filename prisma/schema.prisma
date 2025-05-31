@@ -31,17 +31,18 @@ enum Role {
 }
 
 model Evento {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  titulo         String
-  descricao      String
-  categoria      String
-  dataInicioISO  DateTime
-  dataInicio     String
-  dataFim        String?
-  local          Local
-  preco          Float
-  imagemCapa     String
-  status         Status   @default(ativo)
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  titulo               String
+  descricao            String
+  categoria            String
+  dataInicioISO        DateTime
+  dataInicio           String
+  dataFim              String?
+  local                Local
+  preco                Float
+  imagemCapa           String
+  imagemCapaPublicId   String?
+  status               Status   @default(ativo)
 }
 
 type Local {

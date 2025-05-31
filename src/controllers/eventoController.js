@@ -1,7 +1,13 @@
 import fs from 'fs'
-import path from 'path'
+import { v2 as cloudinary } from 'cloudinary'
 import { PrismaClient } from '../generated/prisma/client.js'
 const prisma = new PrismaClient()
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 export async function listarEventos(req, res) {
     try {
@@ -14,9 +20,8 @@ export async function listarEventos(req, res) {
 }
 
 export async function criarEvento(req, res) {
-
     const { titulo, descricao, categoria, dataInicioISO, dataInicio, dataFim, local, preco } = req.body
-    const imagemCapa = req.file.filename
+    const imagemCapa = req.file.path
 
     if (!titulo || !descricao || !categoria || !dataInicioISO || !dataInicio || !local || !preco || !imagemCapa) {
         return res.status(400).json({error: "Faltam dados obrigatórios"})
@@ -27,6 +32,11 @@ export async function criarEvento(req, res) {
     }
 
     try {
+        const resultado = await cloudinary.uploader.upload(imagemCapa, {
+            folder: 'tickers'
+        })
+        fs.unlinkSync(imagemCapa)
+
         await prisma.evento.create({
             data: {
                 titulo,
@@ -43,7 +53,8 @@ export async function criarEvento(req, res) {
                     cep: local.cep
                 },
                 preco: Number(req.body.preco),
-                imagemCapa
+                imagemCapa: resultado.secure_url,
+                imagemCapaPublicId: resultado.public_id
             }
         })
 
@@ -64,14 +75,11 @@ export async function deletarEvento(req, res) {
             return res.status(404).json({error: "Evento não encontrado"})
         }
 
-        if (evento.imagemCapa) {
-            const caminhoImagem = path.join('uploads', evento.imagemCapa)
-            if(fs.existsSync(caminhoImagem)){
-                fs.unlinkSync(caminhoImagem)
-            }
+        if (evento.imagemCapaPublicId) {
+            await cloudinary.uploader.destroy(evento.imagemCapaPublicId)
         }
 
-        await prisma.evento.delete({where: {id: id}})
+        await prisma.evento.delete({where: {id}})
         res.status(200).json("Evento deletado com sucesso", evento)
     } catch (error) {
         console.error("Erro ao deletar evento", error)
@@ -82,7 +90,7 @@ export async function deletarEvento(req, res) {
 export async function atualizarEvento(req, res) {
     const { id } = req.params
     const { titulo, descricao, categoria, dataInicioISO, dataInicio, dataFim, local, preco } = req.body
-    const imagemCapa = req.file.filename
+    const imagemCapa = req.file.path
     
     if (!id) {
         return res.status(400).json({error: "ID do evento é obrigatório"})
@@ -97,7 +105,6 @@ export async function atualizarEvento(req, res) {
     if (dataInicio) dataAtualizacao.dataInicio = dataInicio
     if (dataFim) dataAtualizacao.dataFim = dataFim
     if (preco) dataAtualizacao.preco = Number(preco)
-    if (imagemCapa) dataAtualizacao.imagemCapa = imagemCapa
     if (local) {
         dataAtualizacao.local = {
             update: {
@@ -117,11 +124,16 @@ export async function atualizarEvento(req, res) {
             return res.status(404).json({error: "Evento não encontrado"})
         }
 
-        if (imagemCapa && eventoExistente.imagemCapa) {
-            const caminhoAntigo = path.join('uploads', eventoExistente.imagemCapa)
-            if (fs.existsSync(caminhoAntigo)) {
-                fs.unlinkSync(caminhoAntigo)
+        if (imagemCapa) {
+            if (eventoExistente.imagemCapaPublicId) {
+                await cloudinary.uploader.destroy(eventoExistente.imagemCapaPublicId)
             }
+            
+            const resultado = await cloudinary.uploader.upload(imagemCapa, { folder: 'tickers' })
+            fs.unlinkSync(imagemCapa)
+
+            dataAtualizacao.imagemCapa = resultado.secure_url
+            dataAtualizacao.imagemCapaPublicId = resultado.public_id
         }
 
         const eventoAtualizado = await prisma.evento.update({
