@@ -90,7 +90,7 @@ export async function deletarEvento(req, res) {
 export async function atualizarEvento(req, res) {
     const { id } = req.params
     const { titulo, descricao, categoria, dataInicioISO, dataInicio, dataFim, local, preco } = req.body
-    const imagemCapa = req.file.path
+    const imagemCapa = req.file?.path
     
     if (!id) {
         return res.status(400).json({error: "ID do evento é obrigatório"})

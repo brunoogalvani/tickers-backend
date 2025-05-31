@@ -85,14 +85,21 @@ export async function atualizarUser(req, res) {
     if (!id) {
         return res.status(400).json({error: "ID do usuário é obrigatório"})
     }
+
+    const userExistente = await prisma.user.findUnique({where: {id}})
+
+    if (!userExistente) {
+        return res.status(404).json({error: "Usuário não existente"})
+    }
     
+    let hashPassword = ''
+
+    if (senha && senha.trim() !== '') {
+        const salt = await bcrypt.genSalt(10)
+        hashPassword = await bcrypt.hash(senha, salt)
+    }
+
     try {
-        const userExistente = await prisma.user.findUnique({where: {id}})
-
-        if (!userExistente) {
-            return res.status(404).json({error: "Usuário não existente"})
-        }
-
         const userAtualizado = await prisma.user.update({
             where: {id},
             data: {
@@ -101,7 +108,7 @@ export async function atualizarUser(req, res) {
                 telefone,
                 role,
                 cep,
-                senha
+                senha: hashPassword || undefined
             }
         })
 
@@ -132,7 +139,7 @@ export async function authUser(req, res) {
             return res.status(400).json({error: "Senha inválida"})
         }
 
-        return res.status(200).json({message: "Usuário autenticado", id: user.id})
+        return res.status(200).json({message: "Usuário autenticado", id: user.id, role: user.role})
         
     } catch (error) {
         console.error("Erro na autenticação de usuário", error)
