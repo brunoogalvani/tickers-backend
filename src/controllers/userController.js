@@ -146,3 +146,20 @@ export async function authUser(req, res) {
         res.status(500).json({error: "Erro na autenticação de usuário"})
     }
 }
+
+export async function buscarEventosDeUser(req, res) {
+    const { id } = req.params
+
+    try {
+        const usuario = await prisma.user.findUnique({where: {id}, include: {eventosCriados: true}})
+
+        if (!usuario) {
+            return res.status(404).json({error: "Usuário não encontrado"})
+        }
+
+        res.status(200).json(usuario.eventosCriados)
+    } catch (error) {
+        console.error("Erro ao buscar eventos do usuário", error)
+        return res.status(500).json({error: "Erro ao buscar eventos do usuário"})
+    }
+}

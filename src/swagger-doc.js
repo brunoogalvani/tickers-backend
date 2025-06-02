@@ -133,6 +133,33 @@ export default {
                 },
             }
         },
+        '/users/{userId}/eventos': {
+            get: {
+                tags: ['users'],
+                summary: 'Retorna os eventos criados de um usuário',
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                responses: {
+                    200: {
+                        description: 'Eventos do usuário retornados',
+                    },
+                    404: {
+                        description: 'Usuário não encontrado',
+                    },
+                    500: {
+                        description: 'Erro no servidor'
+                    }
+                },
+            },
+        },
         '/users/login': {
             post: {
                 tags: ['users'],
@@ -300,8 +327,8 @@ export default {
                     titulo: {type: 'string'},
                     descricao: {type: 'string'},
                     categoria: {type: 'string'},
-                    dataInicioISO: {type: 'string', format: 'date-time'},
                     dataInicio: {type: 'string'},
+                    horaInicio: {type: 'string'},
                     dataFim: {type: 'string', nullable: true},
                     local: {
                         type: 'object',
@@ -315,9 +342,11 @@ export default {
                         required: ['nome', 'endereco', 'cidade', 'estado', 'cep']
                     },
                     preco: {type: 'number'},
-                    imagemCapa: {type: 'string', format: 'binary'}
+                    imagemCapa: {type: 'string', format: 'binary', nullable: true},
+                    criadoPorId: {type: 'string'},
+                    qtdIngressos: {type: 'number'}
                 },
-                required: ['titulo', 'descricao', 'categoria', 'dataInicioISO', 'dataInicio', 'local', 'preco', 'imagemCapa']
+                required: ['titulo', 'descricao', 'categoria', 'dataInicio', 'horaInicio', 'local', 'preco', 'criadoPorId', 'qtdIngressos']
             },
             eventoUpdate: {
                 type: 'object',
@@ -325,8 +354,8 @@ export default {
                     titulo: {type: 'string', nullable: true},
                     descricao: {type: 'string', nullable: true},
                     categoria: {type: 'string', nullable: true},
-                    dataInicioISO: {type: 'string', format: 'date-time', nullable: true},
                     dataInicio: {type: 'string', nullable: true},
+                    horaInicio: {type: 'string', nullable: true},
                     dataFim: {type: 'string', nullable: true},
                     local: {
                         type: 'object',
@@ -339,7 +368,9 @@ export default {
                         },
                     },
                     preco: {type: 'number', nullable: true},
-                    imagemCapa: {type: 'string', format: 'binary', nullable: true}
+                    imagemCapa: {type: 'string', format: 'binary', nullable: true},
+                    criadoPorId: {type: 'string', nullable: true},
+                    qtdIngressos: {type: 'number', nullable: true}
                 },
             }
         }

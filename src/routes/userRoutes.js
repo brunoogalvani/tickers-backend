@@ -1,4 +1,4 @@
-import { atualizarUser, authUser, criarUser, deletarUser, listarUserById, listarUsers } from '../controllers/userController.js'
+import { atualizarUser, authUser, buscarEventosDeUser, criarUser, deletarUser, listarUserById, listarUsers } from '../controllers/userController.js'
 
 const userRoutes = (app) => {
     app.get('/users', listarUsers)
@@ -7,6 +7,7 @@ const userRoutes = (app) => {
     app.delete('/users/:id', deletarUser)
     app.patch('/users/:id', atualizarUser)
     app.post('/users/login', authUser)
+    app.get('/users/:id/eventos', buscarEventosDeUser)
 }
 
 export default userRoutes

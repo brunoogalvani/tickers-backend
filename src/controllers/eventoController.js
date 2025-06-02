@@ -20,10 +20,10 @@ export async function listarEventos(req, res) {
 }
 
 export async function criarEvento(req, res) {
-    const { titulo, descricao, categoria, dataInicioISO, dataInicio, dataFim, local, preco } = req.body
-    const imagemCapa = req.file.path
+    const { titulo, descricao, categoria, dataInicio, horaInicio, dataFim, local, preco, criadoPorId, qtdIngressos } = req.body
+    const imagemCapa = req.file?.path
 
-    if (!titulo || !descricao || !categoria || !dataInicioISO || !dataInicio || !local || !preco || !imagemCapa) {
+    if (!titulo || !descricao || !categoria || !dataInicio || !horaInicio || !local || !preco || !criadoPorId || !qtdIngressos) {
         return res.status(400).json({error: "Faltam dados obrigatórios"})
     }
 
@@ -32,10 +32,23 @@ export async function criarEvento(req, res) {
     }
 
     try {
-        const resultado = await cloudinary.uploader.upload(imagemCapa, {
-            folder: 'tickers'
-        })
-        fs.unlinkSync(imagemCapa)
+        const [dia, mes, ano] = dataInicio.split('/');
+        const [hora, minuto] = horaInicio.split(':');
+
+        const localDate = new Date(
+        parseInt(ano),
+        parseInt(mes) - 1,
+        parseInt(dia),
+        parseInt(hora),
+        parseInt(minuto)
+        );
+
+        const dataInicioISO = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+
+        // const resultado = await cloudinary.uploader.upload(imagemCapa, {
+        //     folder: 'tickers'
+        // })
+        // fs.unlinkSync(imagemCapa)
 
         await prisma.evento.create({
             data: {
@@ -44,6 +57,7 @@ export async function criarEvento(req, res) {
                 categoria,
                 dataInicioISO,
                 dataInicio,
+                horaInicio,
                 dataFim: dataFim || null,
                 local: {
                     nome: local.nome,
@@ -52,9 +66,11 @@ export async function criarEvento(req, res) {
                     estado: local.estado,
                     cep: local.cep
                 },
-                preco: Number(req.body.preco),
-                imagemCapa: resultado.secure_url,
-                imagemCapaPublicId: resultado.public_id
+                preco: Number(preco),
+                // imagemCapa: resultado.secure_url,
+                // imagemCapaPublicId: resultado.public_id,
+                criadoPorId,
+                qtdIngressos: Number(qtdIngressos)
             }
         })
 
@@ -89,7 +105,7 @@ export async function deletarEvento(req, res) {
 
 export async function atualizarEvento(req, res) {
     const { id } = req.params
-    const { titulo, descricao, categoria, dataInicioISO, dataInicio, dataFim, local, preco } = req.body
+    const { titulo, descricao, categoria, dataInicio, horaInicio, dataFim, local, preco, criadoPorId, qtdIngressos } = req.body
     const imagemCapa = req.file?.path
     
     if (!id) {
@@ -101,10 +117,12 @@ export async function atualizarEvento(req, res) {
     if (titulo) dataAtualizacao.titulo = titulo
     if (descricao) dataAtualizacao.descricao = descricao
     if (categoria) dataAtualizacao.categoria = categoria
-    if (dataInicioISO) dataAtualizacao.dataInicioISO = dataInicioISO
     if (dataInicio) dataAtualizacao.dataInicio = dataInicio
+    if (horaInicio) dataAtualizacao.horaInicio = horaInicio
     if (dataFim) dataAtualizacao.dataFim = dataFim
     if (preco) dataAtualizacao.preco = Number(preco)
+    if (criadoPorId) dataAtualizacao.criadoPorId = criadoPorId
+    if (qtdIngressos) dataAtualizacao.qtdIngressos = Number(qtdIngressos)
     if (local) {
         dataAtualizacao.local = {
             update: {

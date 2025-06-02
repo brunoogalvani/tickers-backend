@@ -15,19 +15,26 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  nome      String
-  telefone  String
-  email     String   @unique
-  role      Role     @default(user)
-  cep       String
-  senha     String
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome            String
+  telefone        String
+  email           String   @unique
+  role            Role     @default(user)
+  cep             String
+  senha           String
+
+  eventosCriados  Evento[] @relation("CriadorEventos")
+  compras         Compra[]
 }
 
-enum Role {
-  user
-  admin
-  promoter
+model Compra {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  eventoId  String
+  user      User     @relation(fields: [userId], references: [id])
+  evento    Evento   @relation("EventoCompra", fields: [eventoId], references: [id])
+  data      DateTime @default(now())
+  qtd       Int
 }
 
 model Evento {
@@ -37,12 +44,18 @@ model Evento {
   categoria            String
   dataInicioISO        DateTime
   dataInicio           String
+  horaInicio           String?
   dataFim              String?
   local                Local
   preco                Float
-  imagemCapa           String
+  imagemCapa           String?
   imagemCapaPublicId   String?
+  criadoPorId          String?
+  criadoPor            User?     @relation("CriadorEventos", fields: [criadoPorId], references: [id])
+  qtdIngressos         Int?
   status               Status   @default(ativo)
+
+  compras              Compra[] @relation("EventoCompra")
 }
 
 type Local {
@@ -51,6 +64,12 @@ type Local {
   cidade     String
   estado     String
   cep        String
+}
+
+enum Role {
+  user
+  admin
+  promoter
 }
 
 enum Status {
