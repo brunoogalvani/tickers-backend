@@ -48,7 +48,9 @@ export async function criarEvento(req, res) {
         const resultado = await cloudinary.uploader.upload(imagemCapa, {
             folder: 'tickers'
         })
-        fs.unlinkSync(imagemCapa)
+        if (fs.existsSync(imagemCapa)) {
+            fs.unlinkSync(imagemCapa)
+        }
 
         await prisma.evento.create({
             data: {
@@ -148,7 +150,10 @@ export async function atualizarEvento(req, res) {
             }
             
             const resultado = await cloudinary.uploader.upload(imagemCapa, { folder: 'tickers' })
-            fs.unlinkSync(imagemCapa)
+
+            if (fs.existsSync(imagemCapa)) {
+                fs.unlinkSync(imagemCapa)
+            }
 
             dataAtualizacao.imagemCapa = resultado.secure_url
             dataAtualizacao.imagemCapaPublicId = resultado.public_id
