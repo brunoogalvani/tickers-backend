@@ -45,11 +45,15 @@ export async function criarEvento(req, res) {
 
         const dataInicioISO = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
 
-        const resultado = await cloudinary.uploader.upload(imagemCapa, {
-            folder: 'tickers'
-        })
-        if (fs.existsSync(imagemCapa)) {
-            fs.unlinkSync(imagemCapa)
+        const resultado = ''
+
+        if (imagemCapa) {
+            resultado = await cloudinary.uploader.upload(imagemCapa, {
+                folder: 'tickers'
+            })
+            if (fs.existsSync(imagemCapa)) {
+                fs.unlinkSync(imagemCapa)
+            }
         }
 
         await prisma.evento.create({
@@ -69,8 +73,8 @@ export async function criarEvento(req, res) {
                     cep: local.cep
                 },
                 preco: Number(preco),
-                imagemCapa: resultado.secure_url,
-                imagemCapaPublicId: resultado.public_id,
+                imagemCapa: resultado.secure_url || null,
+                imagemCapaPublicId: resultado.public_id || null,
                 criadoPorId,
                 qtdIngressos: Number(qtdIngressos)
             }

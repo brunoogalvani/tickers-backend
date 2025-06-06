@@ -44,15 +44,15 @@ model Evento {
   categoria            String
   dataInicioISO        DateTime
   dataInicio           String
-  horaInicio           String?
+  horaInicio           String
   dataFim              String?
   local                Local
   preco                Float
   imagemCapa           String?
   imagemCapaPublicId   String?
-  criadoPorId          String?
-  criadoPor            User?     @relation("CriadorEventos", fields: [criadoPorId], references: [id])
-  qtdIngressos         Int?
+  criadoPorId          String
+  criadoPor            User     @relation("CriadorEventos", fields: [criadoPorId], references: [id])
+  qtdIngressos         Int
   status               Status   @default(ativo)
 
   compras              Compra[] @relation("EventoCompra")
