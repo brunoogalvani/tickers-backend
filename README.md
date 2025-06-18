@@ -37,7 +37,7 @@ API desenvolvida em Node.js com Express para um sistema de eventos. Este backend
 1. Clone o repositório:
 
 ```
-git clone https://github.com/brunoogalvani/tickers-backend.git
+git clone git@github.com:brunoogalvani/tickers-backend.git
 ```
 
 2. Instale as dependências:
