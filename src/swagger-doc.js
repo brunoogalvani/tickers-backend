@@ -2,7 +2,7 @@ export default {
     openapi: '3.0.0',
     info: {
         title: 'Tickers API',
-        description: 'Essa API faz parte do projeto das matérias de <strong>Sistemas distribuídos e mobile</strong> e <strong>Usabilidade, desenvolvimento web, mobile e jogos</strong>.<br><br>Os integrantes do grupo são: <ul><li>Allan Lucas Ogawa - RA: 824138863</li><li>Arthur Nascimento Nabas de Oliveira - RA: 824132232</li><li>Bruno Galvani Thezolin - RA: 82411888</li><li>Brunno Luiz de Sousa Nepomuceno - RA: 82414197</li><li>Danilo de Araujo Massimetti Maranha - RA: 824129587</li><li>Bruno Galvani Thezolin - RA: 82411888</li><li>Paulo Messias Santos Filho - RA: 825162650</li></ul>',
+        description: 'Essa API faz parte do projeto das matérias de <strong>Sistemas distribuídos e mobile</strong> e <strong>Usabilidade, desenvolvimento web, mobile e jogos</strong>.<br><br>Os integrantes do grupo são: <ul><li>Allan Lucas Ogawa - RA: 824138863</li><li>Arthur Nascimento Nabas de Oliveira - RA: 824132232</li><li>Bruno Galvani Thezolin - RA: 82411888</li><li>Brunno Luiz de Sousa Nepomuceno - RA: 82414197</li><li>Danilo de Araujo Massimetti Maranha - RA: 824129587</li><li>Paulo Messias Santos Filho - RA: 825162650</li></ul>',
         version: '1.0.0',
     },
     servers: [{url: 'https://tickers-backend.vercel.app'}, {url: 'http://localhost:8080'}],
