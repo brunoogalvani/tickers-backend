@@ -1,6 +1,15 @@
 # Tickers Backend
 
-API desenvolvida em Node.js com Express para gerenciamento de tickers de ações. Este backend permite criar, listar, atualizar e excluir tickers, além de buscar dados atualizados sobre ações na bolsa de valores.
+API desenvolvida em Node.js com Express para um sistema de eventos. Este backend permite criar, listar, atualizar e excluir eventos e usuários.
+
+## Integrantes do projeto:
+
+- **Allan Lucas Ogawa - RA: 824138863**
+- **Arthur Nascimento Nabas de Oliveira - RA: 824132232**
+- **Bruno Galvani Thezolin - RA: 82411888**
+- **Brunno Luiz de Sousa Nepomuceno - RA: 82414197**
+- **Danilo de Araujo Massimetti Maranha - RA: 824129587**
+- **Paulo Messias Santos Filho - RA: 825162650**
 
 ## Tecnologias
 
