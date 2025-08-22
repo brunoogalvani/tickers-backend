@@ -48,14 +48,6 @@ npm install
 
 3. Configure as variáveis de ambiente criando um arquivo .env fora da pasta /src:
 
-```
-DATABASE_URL="mongodb+srv://brunnolsn:EJv5V1zsXPTuIV8U@tickers.cwguffk.mongodb.net/Tickers?retryWrites=true&w=majority&appName=Tickers"
-CLOUDINARY_URL=cloudinary://763427534844265:74gaMlwRGJEQCm939fAe30n9-7s@dexmww3sm
-CLOUDINARY_CLOUD_NAME=dexmww3sm
-CLOUDINARY_API_KEY=763427534844265
-CLOUDINARY_API_SECRET=74gaMlwRGJEQCm939fAe30n9-7s
-```
-
 4. Rode as migrations do banco:
 
 ```
