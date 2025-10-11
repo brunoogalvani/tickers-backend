@@ -1,19 +1,24 @@
 import { PrismaClient } from '../generated/prisma/client.js'
 import bcrypt from 'bcrypt'
-
 const prisma = new PrismaClient()
-try {
-    console.log("Prisma Client inicializado com sucesso!")
-} catch (error) {
-    console.error("Erro ao inicializar Prisma Client: ", error)
-}
 
 export async function listarUsers(req, res) {
     try {
-        const users = await prisma.user.findMany()
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                nome: true,
+                telefone: true,
+                email: true,
+                role: true,
+                cep: true,
+                senha: false
+            }
+        })
         res.status(200).json(users)
     } catch (error) {
         console.log("Erro ao retornar usuários", error)
+        res.status(500).json({error: "Erro ao retornar usuários"})
     }
 }
 
@@ -21,10 +26,24 @@ export async function listarUserById(req, res) {
     const { id } = req.params
 
     try {
-        const user = await prisma.user.findUnique({where: {id: id}})
+        const user = await prisma.user.findUnique({
+            where: {
+                id: id
+            }, 
+            select: {
+                id: true,
+                nome: true,
+                telefone: true,
+                email: true,
+                role: true,
+                cep: true,
+                senha: false
+            }
+        })
         res.status(200).json(user)
     } catch (error) {
         console.log("Erro ao retornar usuário", error)
+        res.status(500).json({error: "Erro ao retornar usuário"})
     }
 }
 
@@ -65,13 +84,15 @@ export async function deletarUser(req, res) {
     const { id } = req.params
 
     try {
-        const user = await prisma.user.delete({
-            where: {
-                id: id,
-            },
-        })
+        const user = await prisma.user.findUnique({where: {id}})
 
-        res.status(200).json("Usuário deletado com sucesso", user)
+        if (!user) {
+            return res.status(404).json({error: "Usuário não encontrado"})
+        }
+
+        await prisma.user.delete({where: {id}})
+
+        res.status(200).json({message: "Usuário deletado com sucesso", data: user})
     } catch (error) {
         console.error("Erro ao deletar usuário", error)
         res.status(500).json({error: "Erro ao deletar usuário"})
@@ -91,6 +112,14 @@ export async function atualizarUser(req, res) {
     if (!userExistente) {
         return res.status(404).json({error: "Usuário não existente"})
     }
+
+    // Se outro usuário já tem o email, deve retornar 409 Conflict
+    if (email && email !== userExistente.email) {
+        const emailExiste = await prisma.user.findUnique({where: {email}})
+        if (emailExiste) {
+            return res.status(409).json({error: "Email já está em uso"})
+        }
+    }
     
     let hashPassword = ''
 
@@ -99,20 +128,21 @@ export async function atualizarUser(req, res) {
         hashPassword = await bcrypt.hash(senha, salt)
     }
 
+    const dataAtualizacao = {}
+    if (nome) dataAtualizacao.nome = nome
+    if (email) dataAtualizacao.email = email
+    if (telefone) dataAtualizacao.telefone = telefone
+    if (role) dataAtualizacao.role = role
+    if (cep) dataAtualizacao.cep = cep
+    if (hashPassword) dataAtualizacao.senha = hashPassword
+
     try {
         const userAtualizado = await prisma.user.update({
             where: {id},
-            data: {
-                nome,
-                email,
-                telefone,
-                role,
-                cep,
-                senha: hashPassword || undefined
-            }
+            data: dataAtualizacao
         })
 
-        return res.status(200).json({message: "Usuário atualizado com sucesso!", usuario: userAtualizado})
+        return res.status(200).json({message: "Usuário atualizado com sucesso!", data: userAtualizado})
     } catch (error) {
         console.error("Erro ao atualizar usuário", error)
         res.status(500).json({error: "Erro ao atualizar usuário"})
@@ -130,13 +160,13 @@ export async function authUser(req, res) {
         const user = await prisma.user.findUnique({where: {email: email}})
 
         if (!user) {
-            return res.status(400).json({error: "Usuário não encontrado"})
+            return res.status(404).json({error: "Usuário não encontrado"})
         }
 
         const isMatch = await bcrypt.compare(senha, user.senha)
 
         if (!isMatch) {
-            return res.status(400).json({error: "Senha inválida"})
+            return res.status(401).json({error: "Credenciais inválidas"})
         }
 
         return res.status(200).json({message: "Usuário autenticado", id: user.id, role: user.role})

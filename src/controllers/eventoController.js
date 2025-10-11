@@ -19,6 +19,23 @@ export async function listarEventos(req, res) {
     }
 }
 
+export async function listarEventoById(req, res) {
+    const { id } = req.params
+
+    try {
+        const evento = await prisma.evento.findUnique({where: {id}})
+
+        if (!evento) {
+            return res.status(404).json({error: "Evento não existe"})
+        }
+
+        res.status(200).json(evento)
+    } catch (error) {
+        console.error("Erro ao encontrar evento", error)
+        res.status(500).json({error: "Erro ao encontrar evento"})
+    }
+}
+
 export async function criarEvento(req, res) {
     const { titulo, descricao, categoria, dataInicio, horaInicio, dataFim, local, preco, criadoPorId, qtdIngressos } = req.body
     const imagemCapa = req.file?.path
@@ -28,7 +45,7 @@ export async function criarEvento(req, res) {
     }
 
     if (await prisma.evento.findFirst({where: {titulo: titulo, status: "ativo"}})) {
-        return res.status(400).json({error: "Já existe um evento com este nome"})
+        return res.status(409).json({error: "Já existe um evento com este nome"})
     }
 
     try {
@@ -45,14 +62,16 @@ export async function criarEvento(req, res) {
 
         const dataInicioISO = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
 
-        const resultado = ''
+        let resultado = ''
 
         if (imagemCapa) {
-            resultado = await cloudinary.uploader.upload(imagemCapa, {
-                folder: 'tickers'
-            })
-            if (fs.existsSync(imagemCapa)) {
-                fs.unlinkSync(imagemCapa)
+            try {
+                resultado = await cloudinary.uploader.upload(imagemCapa, { folder: 'tickers' })
+            } catch (error) {
+                if (fs.existsSync(imagemCapa)) fs.unlinkSync(imagemCapa)
+                throw error
+            } finally {
+                if (fs.existsSync(imagemCapa)) fs.unlinkSync(imagemCapa)
             }
         }
 
@@ -83,7 +102,7 @@ export async function criarEvento(req, res) {
         return res.status(201).json({message: "Evento criado com sucesso!"});
     } catch (error) {
         console.error("Erro ao criar evento", error)
-        res.status(500).json({error: "Erro ao criar evento:", error})
+        res.status(500).json({error: "Erro ao criar evento:"})
     }
 }
 
@@ -102,7 +121,7 @@ export async function deletarEvento(req, res) {
         }
 
         await prisma.evento.delete({where: {id}})
-        res.status(200).json("Evento deletado com sucesso", evento)
+        res.status(200).json({ message: "Evento deletado com sucesso", data: evento })
     } catch (error) {
         console.error("Erro ao deletar evento", error)
         res.status(500).json({error: "Erro ao deletar evento"})
@@ -125,6 +144,22 @@ export async function atualizarEvento(req, res) {
     if (categoria) dataAtualizacao.categoria = categoria
     if (dataInicio) dataAtualizacao.dataInicio = dataInicio
     if (horaInicio) dataAtualizacao.horaInicio = horaInicio
+    if (dataInicio || horaInicio) {
+        const [dia, mes, ano] = dataInicio.split('/');
+        const [hora, minuto] = horaInicio.split(':');
+
+        const localDate = new Date(
+            parseInt(ano),
+            parseInt(mes) - 1,
+            parseInt(dia),
+            parseInt(hora),
+            parseInt(minuto)
+        );
+
+        const dataInicioISO = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+
+        dataAtualizacao.dataInicioISO = dataInicioISO
+    }
     if (dataFim) dataAtualizacao.dataFim = dataFim
     if (preco) dataAtualizacao.preco = Number(preco)
     if (criadoPorId) dataAtualizacao.criadoPorId = criadoPorId
@@ -168,7 +203,7 @@ export async function atualizarEvento(req, res) {
             data: dataAtualizacao 
         })
 
-        return res.status(200).json({message: "Evento atualizado com sucesso", evento: eventoAtualizado})
+        return res.status(200).json({message: "Evento atualizado com sucesso", data: eventoAtualizado})
     } catch (error) {
         console.error("Erro ao atualizar evento", error)
         res.status(500).json({error: "Erro ao atualizar evento"})
