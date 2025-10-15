@@ -1,7 +1,7 @@
 import multer from 'multer'
 import path from 'path'
 import os from 'os'
-import { atualizarEvento, criarEvento, deletarEvento, listarEventoById, listarEventos } from '../controllers/eventoController.js'
+import { atualizarEvento, cancelarEvento, criarEvento, deletarEvento, listarEventoById, listarEventos } from '../controllers/eventoController.js'
 import { parseLocalMiddleware } from '../middleware/parseLocalMiddleware.js'
 
 const uploadDir =  os.tmpdir()
@@ -23,6 +23,7 @@ const eventoRoutes = (app) => {
     app.post('/eventos', upload.single('imagemCapa'), parseLocalMiddleware, criarEvento)
     app.delete('/eventos/:id', deletarEvento)
     app.patch('/eventos/:id', upload.single('imagemCapa'), atualizarEvento)
+    app.patch('/eventos/:id/cancelar', cancelarEvento)
 }
 
 export default eventoRoutes

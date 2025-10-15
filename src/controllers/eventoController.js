@@ -209,3 +209,44 @@ export async function atualizarEvento(req, res) {
         res.status(500).json({error: "Erro ao atualizar evento"})
     }
 }
+
+export async function cancelarEvento(req, res) {
+    const { id } = req.params
+
+    try {
+        const evento = await prisma.evento.findUnique({
+            where: { id },
+            include: { compras: true }
+        })
+
+        if (!evento) {
+            return res.status(404).json({error: "Evento não encontrado"})
+        }
+
+        if (evento.status === 'cancelado') {
+            return res.status(400).json({error: "Evento já está cancelado"})
+        }
+
+        if (evento.status === 'encerrado') {
+            return res.status(400).json({error: "Não é possível cancelar evento encerrado"})
+        }
+
+        const eventoAtualizado = await prisma.evento.update({
+            where: { id },
+            data: { status: 'cancelado' }
+        })
+
+        if (evento.compras.length > 0) {
+            console.log(`⚠️ Evento "${evento.titulo}" cancelado. ${evento.compras.length} compra(s) afetada(s)`)
+        }
+
+        return res.status(200).json({
+            message: "Evento cancelado com sucesso",
+            data: eventoAtualizado,
+            comprasAfetadas: evento.compras.length
+        })
+    } catch (error) {
+        console.error("Erro ao cancelar evento", error)
+        res.status(500).json({error: "Erro ao cancelar evento"})
+    }
+}
