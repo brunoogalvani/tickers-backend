@@ -261,31 +261,33 @@ export async function buscarComprasPorEvento(req, res) {
             return res.status(404).json({error: "Evento não encontrado"})
         }
 
-        const compras = await prisma.compra.findMany({
-            where: {eventoId: id}, 
+        const comprasDoEvento = await prisma.evento.findUnique({
+            where: { id },
             include: {
-                user: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        telefone: true
-                    }
-                }
+                compras: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                nome: true,
+                                email: true,
+                                telefone: true,
+                            },
+                        },
+                    },
+                    orderBy: { data: 'desc' },
+                },
             },
-            orderBy: {
-                data: 'desc'
-            }
-        })
+            })
 
         const totalArrecadado = evento.qtdIngressosVendidos * evento.preco
         const ingressosDisponiveis = evento.qtdIngressos - evento.qtdIngressosVendidos
         const percentualVendido = ((evento.qtdIngressosVendidos / evento.qtdIngressos) * 100).toFixed(2)
 
         res.status(200).json({
-            compras,
+            compras: comprasDoEvento.compras,
             estatisticas: {
-                totalCompras: compras.length,
+                totalCompras: comprasDoEvento.compras.length,
                 ingressosVendidos: evento.qtdIngressosVendidos,
                 ingressosDisponiveis: ingressosDisponiveis,
                 totalIngressos: evento.qtdIngressos,

@@ -25,6 +25,7 @@ model User {
 
   eventosCriados  Evento[] @relation("CriadorEventos")
   compras         Compra[]
+  favoritos       Favorito[]
 }
 
 model Compra {
@@ -35,6 +36,17 @@ model Compra {
   evento    Evento   @relation("EventoCompra", fields: [eventoId], references: [id])
   data      DateTime @default(now())
   qtd       Int
+}
+
+model Favorito {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  eventoId  String
+  user      User     @relation(fields: [userId], references: [id])
+  evento    Evento   @relation("FavoritoEvento", fields: [eventoId], references: [id])
+  data      DateTime @default(now())
+
+  @@unique([userId, eventoId])
 }
 
 model Evento {
@@ -57,6 +69,7 @@ model Evento {
   status               Status   @default(ativo)
 
   compras              Compra[] @relation("EventoCompra")
+  favoritos            Favorito[] @relation("FavoritoEvento")
 }
 
 type Local {

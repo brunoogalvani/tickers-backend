@@ -234,3 +234,150 @@ export async function buscarComprasDeUser(req, res) {
         return res.status(500).json({error: "Erro ao buscar compras do usuário"})
     }
 }
+
+export async function listarFavoritos(req, res) {
+    const { userId } = req.params
+
+    try {
+        const favoritos = await prisma.favorito.findMany({
+            where: {userId},
+            include: {
+                evento: {
+                    select: {
+                        id: true,
+                        titulo: true,
+                        descricao: true,
+                        categoria: true,
+                        dataInicio: true,
+                        horaInicio: true,
+                        local: true,
+                        preco: true,
+                        imagemCapa: true,
+                        qtdIngressos: true,
+                        qtdIngressosVendidos: true,
+                        status: true
+                    }
+                }
+            },
+            orderBy: {
+                data: 'desc'
+            }
+        })
+
+        res.status(200).json(favoritos)
+    } catch (error) {
+        console.error("Erro ao listar favoritos", error)
+        res.status(500).json({error: "Erro ao listar favoritos"})
+    }
+}
+
+export async function adicionarFavorito(req, res) {
+    const { userId } = req.params
+    const { eventoId } = req.body
+
+    if (!eventoId) {
+        return res.status(400).json({error: "ID do evento é obrigatório"})
+    }
+
+    try {
+        const usuario = await prisma.user.findUnique({where: {id: userId}})
+        if (!usuario) {
+            return res.status(404).json({error: "Usuário não encontrado"})
+        }
+        
+        const evento = await prisma.evento.findUnique({where: {id: eventoId}})
+        if (!evento) {
+            return res.status(404).json({error: "Evento não encontrado"})
+        }
+
+        const favoritoExistente = await prisma.favorito.findUnique({
+            where: {
+                userId_eventoId: {
+                    userId,
+                    eventoId
+                }
+            }
+        })
+
+        if (favoritoExistente) {
+            return res.status(409).json({error: "Evento já está nos favoritos"})
+        }
+
+        const favorito = await prisma.favorito.create({
+            data: {
+                userId,
+                eventoId
+            },
+            include: {
+                evento: {
+                    select: {
+                        id: true,
+                        titulo: true,
+                        imagemCapa: true
+                    }
+                }
+            }
+        })
+
+        res.status(201).json({message: "Evento adicionado aos favoritos", favorito})
+    } catch (error) {
+        console.error("Erro ao adicionar favorito", error)
+        res.status(500).json({error: "Erro ao adicionar favorito"})
+    }
+}
+
+export async function removerFavorito(req, res) {
+    const { userId, eventoId } = req.params
+
+    try {
+        const favorito = await prisma.favorito.findUnique({
+            where: {
+                userId_eventoId: {
+                    userId,
+                    eventoId
+                }
+            }
+        })
+
+        if (!favorito) {
+            return res.status(404).json({error: "Favorito não encontrado"})
+        }
+
+        await prisma.favorito.delete({
+            where: {
+                userId_eventoId: {
+                    userId,
+                    eventoId
+                }
+            }
+        })
+
+        res.status(200).json({message: "Evento removido dos favoritos"})
+    } catch (error) {
+        console.error("Erro ao remover favorito", error)
+        res.status(500).json({error: "Erro ao remover favorito"})
+    }
+}
+
+export async function verificarFavorito(req, res) {
+    const { userId, eventoId } = req.params
+
+    try {
+        const favorito = await prisma.favorito.findUnique({
+            where: {
+                userId_eventoId: {
+                    userId,
+                    eventoId
+                }
+            }
+        })
+
+        res.status(200).json({
+            isFavorito: !!favorito,
+            favoritoId: favorito?.id || null
+        })
+    } catch (error) {
+        console.error("Erro ao verificar favorito", error)
+        res.status(500).json({error: "Erro ao verificar favorito"})
+    }
+}
