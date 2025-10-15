@@ -193,3 +193,44 @@ export async function buscarEventosDeUser(req, res) {
         return res.status(500).json({error: "Erro ao buscar eventos do usuário"})
     }
 }
+
+export async function buscarComprasDeUser(req, res) {
+    const { id } = req.params
+
+    try {
+        const usuario = await prisma.user.findUnique({
+            where: {id}, 
+            include: {
+                compras: {
+                    include: {
+                        evento: {
+                            select: {
+                                id: true,
+                                titulo: true,
+                                descricao: true,
+                                dataInicio: true,
+                                horaInicio: true,
+                                local: true,
+                                preco: true,
+                                imagemCapa: true,
+                                status: true
+                            }
+                        }
+                    },
+                    orderBy: {
+                        data: 'desc'
+                    }
+                }
+            }
+        })
+
+        if (!usuario) {
+            return res.status(404).json({error: "Usuário não encontrado"})
+        }
+
+        res.status(200).json(usuario.compras)
+    } catch (error) {
+        console.error("Erro ao buscar compras do usuário", error)
+        return res.status(500).json({error: "Erro ao buscar compras do usuário"})
+    }
+}

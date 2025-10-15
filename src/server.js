@@ -6,6 +6,7 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerDocs from './swagger-doc.js'
 
 import dotenv from 'dotenv'
+import compraRoutes from './routes/compraRoutes.js'
 dotenv.config()
 
 const app = express()
@@ -22,6 +23,7 @@ app.use('/uploads', express.static('uploads'))
 
 userRoutes(app)
 eventoRoutes(app)
+compraRoutes(app)
 
 // CDN CSS
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.3.0/swagger-ui.min.css";

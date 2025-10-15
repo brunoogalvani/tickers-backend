@@ -250,3 +250,53 @@ export async function cancelarEvento(req, res) {
         res.status(500).json({error: "Erro ao cancelar evento"})
     }
 }
+
+export async function buscarComprasPorEvento(req, res) {
+    const { id } = req.params
+
+    try {
+        const evento = await prisma.evento.findUnique({where: {id}})
+        
+        if (!evento) {
+            return res.status(404).json({error: "Evento não encontrado"})
+        }
+
+        const compras = await prisma.compra.findMany({
+            where: {eventoId: id}, 
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true,
+                        telefone: true
+                    }
+                }
+            },
+            orderBy: {
+                data: 'desc'
+            }
+        })
+
+        const totalArrecadado = evento.qtdIngressosVendidos * evento.preco
+        const ingressosDisponiveis = evento.qtdIngressos - evento.qtdIngressosVendidos
+        const percentualVendido = ((evento.qtdIngressosVendidos / evento.qtdIngressos) * 100).toFixed(2)
+
+        res.status(200).json({
+            compras,
+            estatisticas: {
+                totalCompras: compras.length,
+                ingressosVendidos: evento.qtdIngressosVendidos,
+                ingressosDisponiveis: ingressosDisponiveis,
+                totalIngressos: evento.qtdIngressos,
+                percentualVendido: `${percentualVendido}%`,
+                valorArrecadado: totalArrecadado,
+                precoUnitario: evento.preco,
+                statusEvento: evento.status
+            }
+        })
+    } catch (error) {
+        console.error("Erro ao listar compras do evento", error)
+        res.status(500).json({error: "Erro ao listar compras do evento"})
+    }
+}

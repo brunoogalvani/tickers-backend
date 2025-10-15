@@ -53,6 +53,7 @@ model Evento {
   criadoPorId          String
   criadoPor            User     @relation("CriadorEventos", fields: [criadoPorId], references: [id])
   qtdIngressos         Int
+  qtdIngressosVendidos Int      @default(0)
   status               Status   @default(ativo)
 
   compras              Compra[] @relation("EventoCompra")
