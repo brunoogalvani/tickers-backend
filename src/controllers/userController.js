@@ -25,6 +25,10 @@ export async function listarUsers(req, res) {
 export async function listarUserById(req, res) {
     const { id } = req.params
 
+    if (!id) {
+        return res.status(400).json({error: "ID do usuário é obrigatório"})
+    }
+
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -83,6 +87,10 @@ export async function criarUser(req, res) {
 export async function deletarUser(req, res) {
     const { id } = req.params
 
+    if (!id) {
+        return res.status(400).json({error: "ID do usuário é obrigatório"})
+    }
+
     try {
         const user = await prisma.user.findUnique({where: {id}})
 
@@ -110,10 +118,9 @@ export async function atualizarUser(req, res) {
     const userExistente = await prisma.user.findUnique({where: {id}})
 
     if (!userExistente) {
-        return res.status(404).json({error: "Usuário não existente"})
+        return res.status(404).json({error: "Usuário não encontrado"})
     }
 
-    // Se outro usuário já tem o email, deve retornar 409 Conflict
     if (email && email !== userExistente.email) {
         const emailExiste = await prisma.user.findUnique({where: {email}})
         if (emailExiste) {
@@ -180,6 +187,10 @@ export async function authUser(req, res) {
 export async function buscarEventosDeUser(req, res) {
     const { id } = req.params
 
+    if (!id) {
+        return res.status(400).json({error: "ID do usuário é obrigatório"})
+    }
+
     try {
         const usuario = await prisma.user.findUnique({where: {id}, include: {eventosCriados: true}})
 
@@ -196,6 +207,10 @@ export async function buscarEventosDeUser(req, res) {
 
 export async function buscarComprasDeUser(req, res) {
     const { id } = req.params
+
+    if (!id) {
+        return res.status(400).json({error: "ID do usuário é obrigatório"})
+    }
 
     try {
         const usuario = await prisma.user.findUnique({
@@ -238,6 +253,10 @@ export async function buscarComprasDeUser(req, res) {
 export async function listarFavoritos(req, res) {
     const { userId } = req.params
 
+    if (!userId) {
+        return res.status(400).json({error: "ID do usuário é obrigatório"})
+    }
+
     try {
         const favoritos = await prisma.favorito.findMany({
             where: {userId},
@@ -275,8 +294,8 @@ export async function adicionarFavorito(req, res) {
     const { userId } = req.params
     const { eventoId } = req.body
 
-    if (!eventoId) {
-        return res.status(400).json({error: "ID do evento é obrigatório"})
+    if (!userId || !eventoId) {
+        return res.status(400).json({error: "IDs do usuário e do evento são obrigatórios"})
     }
 
     try {
@@ -329,6 +348,10 @@ export async function adicionarFavorito(req, res) {
 export async function removerFavorito(req, res) {
     const { userId, eventoId } = req.params
 
+    if (!userId || !eventoId) {
+        return res.status(400).json({error: "IDs do usuário e do evento são obrigatórios"})
+    }
+
     try {
         const favorito = await prisma.favorito.findUnique({
             where: {
@@ -361,6 +384,10 @@ export async function removerFavorito(req, res) {
 
 export async function verificarFavorito(req, res) {
     const { userId, eventoId } = req.params
+
+    if (!userId || !eventoId) {
+        return res.status(400).json({error: "IDs do usuário e do evento são obrigatórios"})
+    }
 
     try {
         const favorito = await prisma.favorito.findUnique({

@@ -34,6 +34,10 @@ export async function listarCompras(req, res) {
 export async function listarCompraById(req, res) {
     const { id } = req.params
 
+    if (!id) {
+        return res.status(400).json({error: "ID da compra é obrigatório"})
+    }
+
     try {
         const compra = await prisma.compra.findUnique({
             where: { id },

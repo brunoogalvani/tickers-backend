@@ -14,6 +14,10 @@ export default {
         {
             name: 'eventos',
             description: 'Ações sobre os eventos'
+        },
+        {
+            name: 'compras',
+            description: 'Ações sobre as compras'
         }
     ],
     paths: {
@@ -22,9 +26,8 @@ export default {
                 tags: ['users'],
                 summary: 'Retorna uma lista com todos os usuários',
                 responses: {
-                    200: {
-                        description: 'Lista de usuários retornada'
-                    }
+                    200: {description: 'Lista de usuários retornada'},
+                    500: {description: 'Erro no servidor'}
                 },
             },
             post: {
@@ -34,156 +37,252 @@ export default {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/user'
-                            }
+                            schema: {$ref: '#/components/schemas/user'}
                         }
                     }
                 },
                 responses: {
-                    201: {
-                        description: 'Usuário criado'
-                    },
-                    400: {
-                        description: 'Erro na requisição'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
-                    }
+                    201: {description: 'Usuário criado'},
+                    400: {description: 'Faltam dados obrigatórios ou o email já está sendo utilizado'},
+                    500: {description: 'Erro no servidor'}
                 },
             }
         },
         '/users/{userId}': {
             get: {
                 tags: ['users'],
-                summary: 'Retorna um usuário de acordo com o ID',
-                "parameters": [
+                summary: 'Retorna um usuário',
+                parameters: [
                     {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "ID do usuário",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
                     }
                 ],
                 responses: {
-                    200: {
-                        description: 'Usuário retornado',
-                    }
+                    200: {description: 'Usuário retornado',},
+                    400: {description: 'ID é obrigatório'},
+                    500: {description: 'Erro no servidor'}
                 },
             },
             delete: {
                 tags: ['users'],
-                summary: 'Deleta um usuário de acordo com o ID',
-                "parameters": [
+                summary: 'Deleta um usuário',
+                parameters: [
                     {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "ID do usuário",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
                     }
                 ],
                 responses: {
-                    200: {
-                        description: 'Usuário deletado'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
-                    }
+                    200: {description: 'Usuário deletado'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Usuário não encontrado'},
+                    500: {description: 'Erro no servidor'}
                 },
             },
             patch: {
                 tags: ['users'],
                 summary: 'Atualiza um usuário',
-                "parameters": [
+                parameters: [
                     {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "ID do usuário",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
                     }
                 ],
                 requestBody: {
                     content: {
                         'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/userUpdate'
-                            }
+                            schema: {$ref: '#/components/schemas/userUpdate'}
                         }
                     }
                 },
                 responses: {
-                    200: {
-                        description: 'Usuário atualizado'
-                    },
-                    400: {
-                        description: 'ID é obrigatório'
-                    },
-                    404: {
-                        description: 'Usuário não encontrado'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
+                    200: {description: 'Usuário atualizado'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Usuário não encontrado'},
+                    409: {description: 'Email já está em uso'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/users/login': {
+            post: {
+                tags: ['users'],
+                summary: 'Realiza a autenticação de um usuário',
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {$ref: '#/components/schemas/userLogin'}
+                        }
                     }
+                },
+                responses: {
+                    200: {description: 'Usuário autenticado'},
+                    400: {description: 'Faltam dados obrigatórios'},
+                    401: {description: 'Credenciais inválidas'},
+                    404: {description: 'Usuário não encontrado'},
+                    500: {description: 'Erro no servidor'}
                 },
             }
         },
         '/users/{userId}/eventos': {
             get: {
                 tags: ['users'],
-                summary: 'Retorna os eventos criados de um usuário',
-                "parameters": [
+                summary: 'Retorna uma lista dos eventos criados de um usuário',
+                parameters: [
                     {
-                        "name": "userId",
-                        "in": "path",
-                        "description": "ID do usuário",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
                     }
                 ],
                 responses: {
-                    200: {
-                        description: 'Eventos do usuário retornados',
-                    },
-                    404: {
-                        description: 'Usuário não encontrado',
-                    },
-                    500: {
-                        description: 'Erro no servidor'
-                    }
+                    200: {description: 'Eventos do usuário retornados'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Usuário não encontrado'},
+                    500: {description: 'Erro no servidor'}
                 },
             },
         },
-        '/users/login': {
+        '/users/{userId}/compras': {
+            get: {
+                tags: ['users'],
+                summary: 'Retorna uma lista das compras feitas por um usuário',
+                parameters: [
+                    {
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
+                responses: {
+                    200: {description: 'Compras do usuário retornadas'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Usuário não encontrado'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/users/{userId}/favoritos': {
+            get: {
+                tags: ['users'],
+                summary: 'Retorna uma lista dos eventos favoritos do usuário',
+                parameters: [
+                    {
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
+                responses: {
+                    200: {description: 'Eventos favoritos retornados'},
+                    400: {description: 'ID é obrigatório'},
+                    500: {description: 'Erro no servidor'}
+                },
+            },
             post: {
                 tags: ['users'],
-                summary: 'Realiza a autenticação de um usuário a partir do email e da senha',
+                summary: 'Adiciona um evento aos favoritos do usuário',
+                parameters: [
+                    {
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
                 requestBody: {
                     required: true,
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/userLogin'
+                                type: 'object',
+                                properties: {
+                                    eventoId: {type: 'string'}
+                                },
+                                required: ['eventoId']
                             }
                         }
                     }
                 },
                 responses: {
-                    200: {
-                        description: 'Usuário autenticado'
+                    201: {description: 'Evento adicionado aos favoritos'},
+                    400: {description: 'IDs do usuário e do evento são obrigatórios'},
+                    404: {description: 'Usuário/evento não encontrado'},
+                    409: {description: 'Evento já está nos favoritos'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/users/{userId}/favoritos/{eventoId}': {
+            delete: {
+                tags: ['users'],
+                summary: 'Remove um evento dos favoritos do usuário',
+                parameters: [
+                    {
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
                     },
-                    400: {
-                        description: 'Credenciais inválidas'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
+                    {
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
                     }
+                ],
+                responses: {
+                    200: {description: 'Evento removido dos favoritos'},
+                    400: {description: 'IDs do usuário e do evento são obrigatórios'},
+                    404: {description: 'Favorito não encontrado'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/users/{userId}/favoritos/check/{eventoId}': {
+            get: {
+                tags: ['users'],
+                summary: 'Verifica se um evento faz parte dos favoritos do usuário',
+                parameters: [
+                    {
+                        name: 'userId',
+                        in: 'path',
+                        description: 'ID do usuário',
+                        required: true,
+                        schema: {type: 'string'}
+                    },
+                    {
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
+                responses: {
+                    200: {description: 'Verificação realizada'},
+                    400: {description: 'IDs do usuário e do evento são obrigatórios'},
+                    500: {description: 'Erro no servidor'}
                 },
             }
         },
@@ -192,12 +291,8 @@ export default {
                 tags:['eventos'],
                 summary: 'Retorna uma lista com todos os eventos',
                 responses: {
-                    200: {
-                        description: 'Lista de eventos retornada',
-                    },
-                    500: {
-                        description: 'Erro no servidor'
-                    }
+                    200: {description: 'Lista de eventos retornada'},
+                    500: {description: 'Erro no servidor'}
                 }
             },
             post: {
@@ -207,86 +302,175 @@ export default {
                     required: true,
                     content: {
                         'multipart/form-data': {
-                            schema: {
-                                $ref: '#/components/schemas/evento'
-                            }
+                            schema: {$ref: '#/components/schemas/evento'}
                         }
                     }
                 },
                 responses: {
-                    201: {
-                        description: 'Evento criado'
-                    },
-                    400: {
-                        description: 'Erro na requisição'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
-                    }
+                    201: {description: 'Evento criado'},
+                    400: {description: 'Faltam dados obrigatórios'},
+                    409: {description: 'Já existe um evento com este nome'},
+                    500: {description: 'Erro no servidor'}
                 },
             }
         },
         '/eventos/{eventoId}': {
-            delete: {
+            get: {
                 tags: ['eventos'],
-                summary: 'Deleta um evento de acordo com o ID',
-                "parameters": [
+                summary: 'Retorna um evento',
+                parameters: [
                     {
-                        "name": "eventoId",
-                        "in": "path",
-                        "description": "ID do evento",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
                     }
                 ],
                 responses: {
-                    200: {
-                        description: 'Evento deletado'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
+                    200: {description: 'Evento retornado'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Evento não encontrado'},
+                    500: {description: 'Erro no servidor'}
+                },
+            },
+            delete: {
+                tags: ['eventos'],
+                summary: 'Deleta um evento',
+                parameters: [
+                    {
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
                     }
+                ],
+                responses: {
+                    200: {description: 'Evento deletado'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Evento não encontrado'},
+                    500: {description: 'Erro no servidor'}
                 },
             },
             patch: {
                 tags: ['eventos'],
                 summary: 'Atualiza um evento',
-                "parameters": [
+                parameters: [
                     {
-                        "name": "eventoId",
-                        "in": "path",
-                        "description": "ID do evento",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
                     }
                 ],
                 requestBody: {
                     content: {
                         'multipart/form-data': {
-                            schema: {
-                                $ref: '#/components/schemas/eventoUpdate'
-                            }
+                            schema: {$ref: '#/components/schemas/eventoUpdate'}
                         }
                     }
                 },
                 responses: {
-                    200: {
-                        description: 'Evento atualizado'
-                    },
-                    400: {
-                        description: 'ID é obrigatório'
-                    },
-                    404: {
-                        description: 'Evento não encontrado'
-                    },
-                    500: {
-                        description: 'Erro no servidor'
-                    }
+                    200: {description: 'Evento atualizado'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Evento não encontrado'},
+                    500: {description: 'Erro no servidor'}
                 },
             }
         },
+        '/eventos/{eventoId}/cancelar': {
+            patch: {
+                tags: ['eventos'],
+                summary: 'Cancela um evento',
+                parameters: [
+                    {
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
+                responses: {
+                    200: {description: 'Evento cancelado'},
+                    400: {description: 'ID é obrigatório ou evento já cancelado/encerrado'},
+                    404: {description: 'Evento não encontrado'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/eventos/{eventoId}/compras': {
+            get: {
+                tags: ['eventos'],
+                summary: 'Retorna uma lista com as compras de um evento',
+                parameters: [
+                    {
+                        name: 'eventoId',
+                        in: 'path',
+                        description: 'ID do evento',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
+                responses: {
+                    200: {description: 'Lista de compras do evento retornada'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Evento não encontrado'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/compras': {
+            get: {
+                tags: ['compras'],
+                summary: 'Retorna uma lista com todas as compras',
+                responses: {
+                    200: {description: 'Lista de compras retornada'},
+                    500: {description: 'Erro no servidor'}
+                },
+            },
+            post: {
+                tags: ['compras'],
+                summary: 'Cria uma nova compra',
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {$ref: '#/components/schemas/compra'}
+                        }
+                    }
+                },
+                responses: {
+                    201: {description: 'Compra realizada'},
+                    400: {description: 'Faltam dados obrigatórios, evento indisponível para compra ou quantidade de ingressos indisponível'},
+                    404: {description: 'Usuário/evento não encontrado'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        },
+        '/compras/{compraId}': {
+            get: {
+                tags: ['compras'],
+                summary: 'Retorna uma compra',
+                parameters: [
+                    {
+                        name: 'compraId',
+                        in: 'path',
+                        description: 'ID da compra',
+                        required: true,
+                        schema: {type: 'string'}
+                    }
+                ],
+                responses: {
+                    200: {description: 'Compra retornada'},
+                    400: {description: 'ID é obrigatório'},
+                    404: {description: 'Compra não encontrada'},
+                    500: {description: 'Erro no servidor'}
+                },
+            }
+        }
     },
     components: {
         schemas: {
@@ -372,6 +556,15 @@ export default {
                     criadoPorId: {type: 'string', nullable: true},
                     qtdIngressos: {type: 'number', nullable: true}
                 },
+            },
+            compra: {
+                type: 'object',
+                properties: {
+                    userId: {type: 'string'},
+                    eventoId: {type: 'string'},
+                    qtd: {type: 'number'}
+                },
+                required: ['userId', 'eventoId', 'qtd']
             }
         }
     }

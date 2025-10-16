@@ -22,11 +22,15 @@ export async function listarEventos(req, res) {
 export async function listarEventoById(req, res) {
     const { id } = req.params
 
+    if (!id) {
+        return res.status(400).json({error: "ID do evento é obrigatório"})
+    }
+
     try {
         const evento = await prisma.evento.findUnique({where: {id}})
 
         if (!evento) {
-            return res.status(404).json({error: "Evento não existe"})
+            return res.status(404).json({error: "Evento não encontrado"})
         }
 
         res.status(200).json(evento)
@@ -108,6 +112,10 @@ export async function criarEvento(req, res) {
 
 export async function deletarEvento(req, res) {
     const { id } = req.params
+
+    if (!id) {
+        return res.status(400).json({error: "ID do evento é obrigatório"})
+    }
 
     try {
         const evento = await prisma.evento.findUnique({where: {id}})
@@ -213,6 +221,10 @@ export async function atualizarEvento(req, res) {
 export async function cancelarEvento(req, res) {
     const { id } = req.params
 
+    if (!id) {
+        return res.status(400).json({error: "ID do evento é obrigatório"})
+    }
+
     try {
         const evento = await prisma.evento.findUnique({
             where: { id },
@@ -253,6 +265,10 @@ export async function cancelarEvento(req, res) {
 
 export async function buscarComprasPorEvento(req, res) {
     const { id } = req.params
+
+    if (!id) {
+        return res.status(400).json({error: "ID do evento é obrigatório"})
+    }
 
     try {
         const evento = await prisma.evento.findUnique({where: {id}})
